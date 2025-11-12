@@ -7,7 +7,9 @@
 ____
 # 0.2.3.6
 **Removed dance/acid death animation.**
+
 **Made resting animation only happen after 10-ish seconds of idle.**
+
 **Changed speed of Konpanion 10->(final)10.**
 ____
 # 0.2.2.0
