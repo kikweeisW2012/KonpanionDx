@@ -1,4 +1,4 @@
-﻿namespace KonpanionDx
+﻿namespace WiddleKnight
 {
     internal class Constants
     {

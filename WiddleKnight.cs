@@ -4,12 +4,12 @@ using UnityEngine;
 using static Satchel.EnemyUtils;
 using static Satchel.GameObjectUtils;
 
-namespace KonpanionDx
+namespace WiddleKnight
 {
-    public class KonpanionDx : Mod
+    public class WiddleKnight : Mod
     {
 
-        internal static KonpanionDx Instance;
+        internal static WiddleKnight Instance;
 
         internal static List<GameObject> knights = new List<GameObject>();
         internal static Dictionary<ushort,GameObject> remoteKnights = new Dictionary<ushort,GameObject>();
@@ -21,10 +21,10 @@ namespace KonpanionDx
         }
         public override string GetVersion()
         {
-            return "0.2.3.6";
+            return "0.2.3.7";
         }
 
-        public GameObject createKnightCompanion(GameObject ft = null){
+        public GameObject createKnightcompanion(GameObject ft = null){
             HeroController.instance.gameObject.SetActive(false);
             var knight = HeroController.instance.gameObject.createCompanionFromPrefab();
             HeroController.instance.gameObject.SetActive(true);
@@ -37,7 +37,7 @@ namespace KonpanionDx
             knight.GetAddComponent<MeshRenderer>().enabled = true;
             knight.GetAddComponent<Rigidbody2D>().gravityScale = 1f;
 
-            var kc = knight.GetAddComponent<CompanionControl>();
+            var kc = knight.GetAddComponent<WiddleKnightControl>();
             // needs to be 10 or its glitchy
             kc.moveSpeed = 10f;
             kc.followDistance = 2f;
@@ -68,24 +68,24 @@ namespace KonpanionDx
         {
             Instance = this;
             ModHooks.HeroUpdateHook += update;
-            if (KonpanionDx.HasPouch())
+            if (WiddleKnight.HasPouch())
             {
                 PouchIntegration.Initialize();
             }
         }
 
 
-        public GameObject GetNetworkKonpanionDx(ushort id){
+        public GameObject GetNetworkWiddleKnight(ushort id){
             if(remoteKnights.TryGetValue(id,out var knight)){
                 return knight;
             }
-            remoteKnights[id] = createKnightCompanion();
+            remoteKnights[id] = createKnightcompanion();
             return remoteKnights[id];
         }
         public void update()
         {
             if(knights.Count < 1) {
-                knights.Add(createKnightCompanion());
+                knights.Add(createKnightcompanion());
             }
         }
 

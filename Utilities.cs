@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace KonpanionDx
+namespace WiddleKnight
 {
     internal static class Utilities
     {
