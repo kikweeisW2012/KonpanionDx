@@ -21,7 +21,7 @@ namespace WiddleKnight
         }
         public override string GetVersion()
         {
-            return "0.2.3.11";
+            return "pre-release 0.2.3.11";
         }
 
         public GameObject createKnightcompanion(GameObject ft = null){
