@@ -1,18 +1,21 @@
-﻿using Modding;
+using Modding;
 using System.Collections.Generic;
 using UnityEngine;
 using static Satchel.EnemyUtils;
 using static Satchel.GameObjectUtils;
+using Satchel.BetterMenus;
 
 namespace WiddleKnight
 {
-    public class WiddleKnight : Mod
+    public class WiddleKnight : Mod, ICustomMenuMod
     {
 
         internal static WiddleKnight Instance;
 
         internal static List<GameObject> knights = new List<GameObject>();
         internal static Dictionary<ushort,GameObject> remoteKnights = new Dictionary<ushort,GameObject>();
+
+        public GlobalSettings GlobalSettings { get; private set; } = new GlobalSettings();
 
         public static bool HasPouch()
         {
@@ -21,7 +24,7 @@ namespace WiddleKnight
         }
         public override string GetVersion()
         {
-            return "pre-release 0.2.3.11";
+            return "pre-release 0.2.3.21";
         }
 
         public GameObject createKnightcompanion(GameObject ft = null){
@@ -38,7 +41,7 @@ namespace WiddleKnight
             knight.GetAddComponent<Rigidbody2D>().gravityScale = 1f;
 
             var kc = knight.GetAddComponent<WiddleKnightControl>();
-            // needs to be 11 or its glitchy
+            // needs to be max 11 or its glitchy
             kc.moveSpeed = 11f;
             kc.followDistance = 2f;
             kc.IdleShuffleDistance = 0.01f;
@@ -84,10 +87,43 @@ namespace WiddleKnight
         }
         public void update()
         {
+            if(GlobalSettings.SelectedSkinOption == 0) {
+                return;
+            }
+            
             if(knights.Count < 1) {
                 knights.Add(createKnightcompanion());
             }
         }
+
+        public void OnOptionChanged()
+        {
+            foreach(var knight in knights)
+            {
+                if(knight != null)
+                {
+                    UnityEngine.Object.Destroy(knight);
+                }
+            }
+            knights.Clear();
+
+            foreach(var kvp in remoteKnights)
+            {
+                if(kvp.Value != null)
+                {
+                    UnityEngine.Object.Destroy(kvp.Value);
+                }
+            }
+            remoteKnights.Clear();
+
+        }
+
+        public MenuScreen GetMenuScreen(MenuScreen modListMenu, ModToggleDelegates? toggleDelegates)
+        {
+            return WiddleKnightMenu.GetMenu(modListMenu);
+        }
+
+        public bool ToggleButtonInsideMenu => false;
 
     }
 
