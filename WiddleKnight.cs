@@ -16,6 +16,8 @@ namespace WiddleKnight
         internal static List<GameObject> knights = new List<GameObject>();
         internal static Dictionary<ushort,GameObject> remoteKnights = new Dictionary<ushort,GameObject>();
 
+        private static Dictionary<string, tk2dSpriteAnimation> cachedLibraries = new Dictionary<string, tk2dSpriteAnimation>();
+
         public GlobalSettings GlobalSettings { get; private set; } = new GlobalSettings();
 
         public static bool HasPouch()
@@ -25,7 +27,7 @@ namespace WiddleKnight
         }
         public override string GetVersion()
         {
-            return "pre-release 0.2.3.29";
+            return "pre-release 0.2.3.31";
         }
 
         public GameObject createKnightcompanion(GameObject ft = null){
@@ -77,6 +79,12 @@ namespace WiddleKnight
         {
             try
             {
+                if (knight == null)
+                {
+                    LogError("Knight is null, cannot apply skin");
+                    return;
+                }
+
                 string modPath = Path.GetDirectoryName(typeof(WiddleKnight).Assembly.Location);
                 string skinsPath = Path.Combine(modPath, "Skins");
                 
@@ -108,11 +116,21 @@ namespace WiddleKnight
                 customTexture.LoadImage(textureBytes);
 
                 var spriteAnimator = knight.GetComponent<tk2dSpriteAnimator>();
-                if (spriteAnimator != null && spriteAnimator.Library != null)
+                if (spriteAnimator == null || spriteAnimator.Library == null)
                 {
-                    // Clone the animation library to avoid modifying the shared one
+                    LogError("Sprite animator or library is null");
+                    return;
+                }
+
+                string cacheKey = $"{selectedSkinFolder}";
+                
+                if (!cachedLibraries.ContainsKey(cacheKey))
+                {
+                    Log($"Creating cached library for {cacheKey}");
+
                     var newLibrary = Object.Instantiate(spriteAnimator.Library);
-                    spriteAnimator.Library = newLibrary;
+
+                    var materialMap = new Dictionary<Material, Material>();
 
                     foreach (var clip in newLibrary.clips)
                     {
@@ -122,7 +140,6 @@ namespace WiddleKnight
                             {
                                 if (frame != null && frame.spriteCollection != null)
                                 {
-                                    // Clone the sprite collection
                                     var newCollection = Object.Instantiate(frame.spriteCollection);
                                     frame.spriteCollection = newCollection;
                                     
@@ -133,10 +150,16 @@ namespace WiddleKnight
                                         {
                                             if (spriteDefinitions[i] != null && spriteDefinitions[i].material != null)
                                             {
-                                                // Create a new material instance
-                                                Material newMaterial = new Material(spriteDefinitions[i].material);
-                                                newMaterial.mainTexture = customTexture;
-                                                spriteDefinitions[i].material = newMaterial;
+                                                var originalMaterial = spriteDefinitions[i].material;
+
+                                                if (!materialMap.ContainsKey(originalMaterial))
+                                                {
+                                                    Material newMaterial = new Material(originalMaterial);
+                                                    newMaterial.mainTexture = customTexture;
+                                                    materialMap[originalMaterial] = newMaterial;
+                                                }
+                                                
+                                                spriteDefinitions[i].material = materialMap[originalMaterial];
                                             }
                                         }
                                     }
@@ -144,7 +167,11 @@ namespace WiddleKnight
                             }
                         }
                     }
+                    
+                    cachedLibraries[cacheKey] = newLibrary;
                 }
+                
+                spriteAnimator.Library = cachedLibraries[cacheKey];
 
                 Log($"Applied custom skin from {selectedSkinFolder}");
             }
@@ -185,24 +212,43 @@ namespace WiddleKnight
 
         public void OnOptionChanged()
         {
-            foreach(var knight in knights)
+            var knightsCopy = new List<GameObject>(knights);
+            knights.Clear();
+
+            foreach(var knight in knightsCopy)
             {
                 if(knight != null)
                 {
-                    UnityEngine.Object.Destroy(knight);
+                    try
+                    {
+                        UnityEngine.Object.Destroy(knight);
+                    }
+                    catch (System.Exception e)
+                    {
+                        LogError($"Error destroying knight: {e.Message}");
+                    }
                 }
             }
-            knights.Clear();
 
-            foreach(var kvp in remoteKnights)
+            var remoteKnightsCopy = new Dictionary<ushort, GameObject>(remoteKnights);
+            remoteKnights.Clear();
+
+            foreach(var kvp in remoteKnightsCopy)
             {
                 if(kvp.Value != null)
                 {
-                    UnityEngine.Object.Destroy(kvp.Value);
+                    try
+                    {
+                        UnityEngine.Object.Destroy(kvp.Value);
+                    }
+                    catch (System.Exception e)
+                    {
+                        LogError($"Error destroying remote knight: {e.Message}");
+                    }
                 }
             }
-            remoteKnights.Clear();
-
+            
+            cachedLibraries.Clear();
         }
 
         public MenuScreen GetMenuScreen(MenuScreen modListMenu, ModToggleDelegates? toggleDelegates)
