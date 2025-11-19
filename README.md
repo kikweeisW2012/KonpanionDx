@@ -1,6 +1,6 @@
 # WiddleKnight
  
-### WiddleKnight is a forked HKMPpouch mod that adds a little knight to keep you company (works with CustomKnight).
+### WiddleKnight is a forked HKMPpouch mod that adds a little knight to keep you company (Needs satchel, works with CustomKnight).
 
 ## How to add skins
 **1. Download the latest release.**
