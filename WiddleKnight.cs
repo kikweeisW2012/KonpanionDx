@@ -18,7 +18,12 @@ namespace WiddleKnight
 
         private static Dictionary<string, tk2dSpriteAnimation> cachedLibraries = new Dictionary<string, tk2dSpriteAnimation>();
 
-        public GlobalSettings GlobalSettings { get; private set; } = new GlobalSettings();
+        public GlobalSettings GlobalSettings { get; set; } = new GlobalSettings();
+        
+        public void SaveSettings()
+        {
+            Log("Saving global settings");
+        }
 
         public static bool HasPouch()
         {
@@ -27,7 +32,7 @@ namespace WiddleKnight
         }
         public override string GetVersion()
         {
-            return "pre-release 0.2.3.34";
+            return "pre-release 0.2.3.40";
         }
 
         public GameObject createKnightcompanion(GameObject ft = null){
@@ -44,8 +49,8 @@ namespace WiddleKnight
             knight.GetAddComponent<Rigidbody2D>().gravityScale = 1f;
 
             var kc = knight.GetAddComponent<WiddleKnightControl>();
-            // needs to be max 11 or its glitchy
-            kc.moveSpeed = 11f;
+            // needs to be max 10.5 or its glitchy
+            kc.moveSpeed = 10.5f;
             kc.followDistance = 2f;
             kc.IdleShuffleDistance = 0.01f;
 
@@ -195,10 +200,33 @@ namespace WiddleKnight
         public override void Initialize()
         {
             Instance = this;
+            Log($"Initializing WiddleKnight - SelectedSkinOption: {GlobalSettings.SelectedSkinOption}, CustomSubOption: {GlobalSettings.CustomSubOption}");
             ModHooks.HeroUpdateHook += update;
+
+            ModHooks.AfterSavegameLoadHook += OnSaveGameLoad;
+            
             if (WiddleKnight.HasPouch())
             {
                 PouchIntegration.Initialize();
+            }
+        }
+        
+        private void OnSaveGameLoad(SaveGameData data)
+        {
+            Log($"Save game loaded - Reloading settings: SelectedSkinOption: {GlobalSettings.SelectedSkinOption}, CustomSubOption: {GlobalSettings.CustomSubOption}");
+
+            knights.RemoveAll(k => k == null);
+            if (knights.Count > 0)
+            {
+                Log("Clearing existing knights after save load");
+                foreach (var knight in knights)
+                {
+                    if (knight != null)
+                    {
+                        UnityEngine.Object.Destroy(knight);
+                    }
+                }
+                knights.Clear();
             }
         }
 
@@ -215,11 +243,24 @@ namespace WiddleKnight
             if(GlobalSettings.SelectedSkinOption == 0) {
                 return;
             }
+
+            if(HeroController.instance == null) {
+                return;
+            }
             
             knights.RemoveAll(k => k == null);
             
             if(knights.Count < 1) {
-                knights.Add(createKnightcompanion());
+                Log($"Creating knight - SelectedSkinOption: {GlobalSettings.SelectedSkinOption}, CustomSubOption: {GlobalSettings.CustomSubOption}");
+                try
+                {
+                    knights.Add(createKnightcompanion());
+                    Log("Knight created successfully");
+                }
+                catch (System.Exception e)
+                {
+                    LogError($"Failed to create knight: {e.Message}\n{e.StackTrace}");
+                }
             }
         }
 

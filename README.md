@@ -2,6 +2,18 @@
  
 ### WiddleKnight is a forked HKMPpouch mod that adds a little knight to keep you company (works with CustomKnight).
 
+## How to add skins
+**1. Download the latest release.**
+**2. Go to the "skins" folder inside the WiddleKnight mod.**
+**3. Create a new folder with any name you want.**
+**4. Add any "Knight.png" file from any skin mod inside the skin folder you created.**
+**Now your skin should show up under option "Custom"**
+
+# pre-release 0.2.3.40
+**fixed saving**
+**fixed menu**
+**changed speed 11->10**
+____
 # pre-release 0.2.3.34
 **Fixed WK loading**
 ____

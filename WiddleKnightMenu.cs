@@ -22,6 +22,7 @@ namespace WiddleKnight
                     (index) => 
                     {
                         WiddleKnight.Instance.GlobalSettings.SelectedSkinOption = index;
+                        WiddleKnight.Instance.SaveSettings();
                         WiddleKnight.Instance.OnOptionChanged();
                         UpdateDescription();
                     },
@@ -35,6 +36,7 @@ namespace WiddleKnight
                     (index) => 
                     {
                         WiddleKnight.Instance.GlobalSettings.CustomSubOption = index;
+                        WiddleKnight.Instance.SaveSettings();
                         WiddleKnight.Instance.OnOptionChanged();
                     },
                     () => WiddleKnight.Instance.GlobalSettings.CustomSubOption,
