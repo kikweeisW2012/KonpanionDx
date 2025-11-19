@@ -4,9 +4,13 @@
 
 ## How to add skins
 **1. Download the latest release.**
+
 **2. Go to the "skins" folder inside the WiddleKnight mod.**
+
 **3. Create a new folder with any name you want.**
+
 **4. Add any "Knight.png" file from any skin mod inside the skin folder you created.**
+
 **Now your skin should show up under option "Custom"**
 
 # pre-release 0.2.3.41
