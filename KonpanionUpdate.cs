@@ -1,15 +1,15 @@
 ﻿using Hkmp.Math;
 using HkmpPouch;
-using static WiddleKnight.Utilities;
-namespace WiddleKnight
+using static Konpanion.Utilities;
+namespace Konpanion
 {
-    internal class WiddleKnightUpdate : PipeEvent
+    internal class KonpanionUpdate : PipeEvent
     {
-        public static string Name = "WiddleKnightUpdate";
+        public static string Name = "KonpanionUpdate";
         public Vector2 pos { get; set; }
         public State anim { get; set; }
         public Direction dir { get; set; }
-        public override string GetName() => WiddleKnightUpdate.Name;
+        public override string GetName() => KonpanionUpdate.Name;
 
         public override string ToString()
         {
@@ -17,13 +17,13 @@ namespace WiddleKnight
         }
     }
 
-    internal class WiddleKnightUpdateFactory : IEventFactory
+    internal class KonpanionUpdateFactory : IEventFactory
     {
-        public static WiddleKnightUpdateFactory Instance { get; internal set; } = new WiddleKnightUpdateFactory();
+        public static KonpanionUpdateFactory Instance { get; internal set; } = new KonpanionUpdateFactory();
 
         public PipeEvent FromSerializedString(string serializedData)
         {
-            var pEvent = new WiddleKnightUpdate();
+            var pEvent = new KonpanionUpdate();
             var Split = serializedData.Split(Constants.SplitSep);
             pEvent.anim = (State)s2i(Split[0]);
             pEvent.dir = (Direction)s2i(Split[1]);
@@ -31,6 +31,6 @@ namespace WiddleKnight
             return pEvent;
         }
 
-        public string GetName() => WiddleKnightUpdate.Name;
+        public string GetName() => KonpanionUpdate.Name;
     }
 }
